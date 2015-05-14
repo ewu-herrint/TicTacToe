@@ -22,15 +22,19 @@ namespace TicTacToe
     public partial class MainWindow : Window
     {
         private Boolean placeToken = false;
+        private Boolean isSinglePlayer;
         private int turn;
 
         public MainWindow()
         {
             InitializeComponent();
+            PlayerTurnTextBox.Text = "Go to Game -> New Game to start a game!";
+            PlayerTurnTextBox.Visibility = Visibility.Visible;
         }
 
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
+           gameGrid.Children.Clear();
            GameTypeForm gameTypeForm = new GameTypeForm();
 
            DialogResult isSinglePlayer = gameTypeForm.ShowDialog();
@@ -51,10 +55,11 @@ namespace TicTacToe
 
         private void SinglePlayer()
         {
+            isSinglePlayer = true;
             int playerFirst = displayTurnInfo();
-
-            
             placeToken = true;
+            if (playerFirst != 1)
+                aiTurn();
             turn = 1;
         }
 
@@ -95,6 +100,7 @@ namespace TicTacToe
 
         private void Grid_Click(object sender, MouseButtonEventArgs e)
         {
+            
             if(placeToken)
             {
                 Point point = Mouse.GetPosition(gameGrid);
@@ -102,23 +108,83 @@ namespace TicTacToe
                     drawCircle(point);
                 else
                     drawX(point);
-                turn++;
                 checkForWinner();
+                swapTurnDisplayInfo();
             }
-            if (turn > 9)
-                placeToken = false;
-
+            if (isSinglePlayer && placeToken)
+            {
+                aiTurn();
+                swapTurnDisplayInfo();
+            }
             
+            if (turn > 9 && placeToken)
+            {
+                placeToken = false;
+                System.Windows.Forms.MessageBox.Show("Draw");
+            }
+            
+        }
+
+        private void swapTurnDisplayInfo()
+        {
+            if (PlayerTurnTextBox.Text == "Player 1's Turn")
+                PlayerTurnTextBox.Text = "Player 2's Turn";
+            else
+                PlayerTurnTextBox.Text = "Player 1's Turn";
+        }
+
+        private void aiTurn()
+        {
+            Point point = aiPlace();  
+            if (turn % 2 == 0)
+                drawCircle(point);
+            else
+                drawX(point);    
+            checkForWinner();
+        }
+
+        private Point aiPlace()
+        {
+            for (int col = 0; col < 3; col++)
+            {
+                for (int row = 0; row < 3; row++)
+                {
+                    if (gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == col && Grid.GetRow(e) == row) == null)
+                    {
+                        double x, y;
+                        if (col == 0)
+                            x = 125;
+                        else if (col == 1)
+                            x = 255;
+                        else
+                            x = 300;
+                        if (row == 0)
+                            y = 125;
+                        else if (row == 1)
+                            y = 255;
+                        else
+                            y = 300;
+
+                        return new Point(x, y);
+                    }
+                }
+            }
+            throw new InvalidOperationException("No place to place AI token");
         }
 
         private void checkForWinner()
         {
+            Shape shape1;
+            Shape shape2;
+            Shape shape3;
+
+            // Check rows
             for(int row = 0; row < 3; row ++)
             {
-                Shape shape1 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 0 && Grid.GetRow(e) == row);
-                Shape shape2 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 1 && Grid.GetRow(e) == row);
-                Shape shape3 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 2 && Grid.GetRow(e) == row);
-
+                shape1 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 0 && Grid.GetRow(e) == row);
+                shape2 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 1 && Grid.GetRow(e) == row);
+                shape3 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 2 && Grid.GetRow(e) == row);
+                
                 if (shape1 != null && shape2 != null && shape3 != null)
                 {
                     if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
@@ -128,6 +194,50 @@ namespace TicTacToe
                     } 
                 }
             }
+
+            // Check columns
+            for (int col = 0; col < 3; col++)
+            {
+                shape1 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == col && Grid.GetRow(e) == 0);
+                shape2 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == col && Grid.GetRow(e) == 1);
+                shape3 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == col && Grid.GetRow(e) == 2);
+
+                if (shape1 != null && shape2 != null && shape3 != null)
+                {
+                    if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
+                    {
+                        System.Windows.Forms.MessageBox.Show("Winner!");
+                        placeToken = false;
+                    }
+                }
+            }
+
+            //Check Diagonals
+            shape1 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 0 && Grid.GetRow(e) == 0);
+            shape2 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 1 && Grid.GetRow(e) == 1);
+            shape3 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 2 && Grid.GetRow(e) == 2);
+
+            if (shape1 != null && shape2 != null && shape3 != null)
+            {
+                if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
+                {
+                    System.Windows.Forms.MessageBox.Show("Winner!");
+                    placeToken = false;
+                }
+            }
+            shape1 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 2 && Grid.GetRow(e) == 0);
+            shape2 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 1 && Grid.GetRow(e) == 1);
+            shape3 = gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == 0 && Grid.GetRow(e) == 2);
+
+            if (shape1 != null && shape2 != null && shape3 != null)
+            {
+                if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
+                {
+                    System.Windows.Forms.MessageBox.Show("Winner!");
+                    placeToken = false;
+                }
+            }
+
         }
 
         private void drawX(Point point)
@@ -153,40 +263,50 @@ namespace TicTacToe
             line2.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
             line1.VerticalAlignment = System.Windows.VerticalAlignment.Center;
             line2.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            gameGrid.Children.Add(line1);
-            gameGrid.Children.Add(line2);
 
+            int row;
+            int col;
             if (point.X < 128)
             {
-                Grid.SetColumn(line1, 0);
-                Grid.SetColumn(line2, 0);
+                col = 0;
             }
             else if (point.X > 128 && point.X < 256)
             {
-                Grid.SetColumn(line1, 1);
-                Grid.SetColumn(line2, 1);
+                col = 1;
             }
             else
             {
-                Grid.SetColumn(line1, 2);
-                Grid.SetColumn(line2, 2);
+                col = 2;
             }
 
             if (point.Y < 128)
             {
-                Grid.SetRow(line1, 0);
-                Grid.SetRow(line2, 0);
+                row = 0;
             }
             else if (point.Y > 128 && point.Y < 256)
             {
-                Grid.SetRow(line1, 1);
-                Grid.SetRow(line2, 1);
+                row = 1;
             }
             else
             {
-                Grid.SetRow(line1, 2);
-                Grid.SetRow(line2, 2);
+                row = 2;
             }
+
+            if(gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == col && Grid.GetRow(e) == row) == null)
+            {
+                gameGrid.Children.Add(line1);
+                gameGrid.Children.Add(line2);
+                Grid.SetColumn(line1, col);
+                Grid.SetColumn(line2, col);
+                Grid.SetRow(line1, row);
+                Grid.SetRow(line2, row);
+                turn++;
+            }
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.MessageBox.Show(" Tic Tac Toe \n Tyler Herrin \n 2015");
         }
 
         private void drawCircle(Point point)
@@ -199,21 +319,42 @@ namespace TicTacToe
 
             circle.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
             circle.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            gameGrid.Children.Add(circle);
 
+            int row;
+            int col;
             if (point.X < 128)
-                Grid.SetColumn(circle, 0);
+            {
+                col = 0;
+            }
             else if (point.X > 128 && point.X < 256)
-                Grid.SetColumn(circle, 1);
+            {
+                col = 1;
+            }
             else
-                Grid.SetColumn(circle, 2);
+            {
+                col = 2;
+            }
 
             if (point.Y < 128)
-                Grid.SetRow(circle, 0);
+            {
+                row = 0;
+            }
             else if (point.Y > 128 && point.Y < 256)
-                Grid.SetRow(circle, 1);
+            {
+                row = 1;
+            }
             else
-                Grid.SetRow(circle, 2);
+            {
+                row = 2;
+            }
+
+            if (gameGrid.Children.Cast<Shape>().FirstOrDefault(e => Grid.GetColumn(e) == col && Grid.GetRow(e) == row) == null)
+            {
+                gameGrid.Children.Add(circle);
+                Grid.SetColumn(circle, col);
+                Grid.SetRow(circle, row);
+                turn++;
+            }
         }
 
     }
