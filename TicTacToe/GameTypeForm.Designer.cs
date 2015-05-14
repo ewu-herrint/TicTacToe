@@ -1,4 +1,10 @@
-﻿namespace TicTacToe
+﻿/*
+ * Tyler Herrin
+ * Graphics Assignment
+ * CSCD 371
+ */
+
+namespace TicTacToe
 {
     partial class GameTypeForm
     {

@@ -14,6 +14,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 
+/*
+ * Tyler Herrin
+ * Graphics Assignment
+ * CSCD 371
+ */
+
 namespace TicTacToe
 {
     /// <summary>
@@ -189,7 +195,7 @@ namespace TicTacToe
                 {
                     if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
                     {
-                        System.Windows.Forms.MessageBox.Show("Winner!");
+                        whoIsWinner(shape1);
                         placeToken = false;
                     } 
                 }
@@ -206,7 +212,7 @@ namespace TicTacToe
                 {
                     if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
                     {
-                        System.Windows.Forms.MessageBox.Show("Winner!");
+                        whoIsWinner(shape1);
                         placeToken = false;
                     }
                 }
@@ -221,7 +227,7 @@ namespace TicTacToe
             {
                 if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
                 {
-                    System.Windows.Forms.MessageBox.Show("Winner!");
+                    whoIsWinner(shape1);
                     placeToken = false;
                 }
             }
@@ -233,11 +239,23 @@ namespace TicTacToe
             {
                 if (shape1.GetType() == shape2.GetType() && shape1.GetType() == shape3.GetType())
                 {
-                    System.Windows.Forms.MessageBox.Show("Winner!");
+                    whoIsWinner(shape1);
                     placeToken = false;
                 }
             }
 
+        }
+
+        private void whoIsWinner(Shape shape)
+        {
+            if (shape.GetType() == new Line().GetType())
+            {
+                System.Windows.Forms.MessageBox.Show("X Wins!");
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("Circle Wins!");
+            }
         }
 
         private void drawX(Point point)
