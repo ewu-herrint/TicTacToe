@@ -1,0 +1,36 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Name="Window" mc:Ignorable="d" x:Class="TicTacToe.MainWindow"
+        Title="Tic Tac Toe" Height="500" Width="400" WindowStartupLocation="CenterScreen" Cursor="Arrow" ResizeMode="NoResize" HorizontalAlignment="Left" VerticalAlignment="Top">
+    <Canvas HorizontalAlignment="Center" Height="475" VerticalAlignment="Center" Width="400" Margin="0,0,0,-3" ClipToBounds="True">
+        <Grid x:Name="gameGrid" Height="380" Width="384" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Top="25" Canvas.Left="8" Cursor="Hand" PreviewMouseLeftButtonDown="Grid_Click" ShowGridLines="True">
+            <Grid.Background>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+            </Grid.Background>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+        </Grid>
+        <TextBlock x:Name="PlayerTurnTextBox" TextWrapping="Wrap" Text="Player One's Turn" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" TextAlignment="Center" Width="400" Height="22" Canvas.Top="443" IsEnabled="False" Visibility="Hidden"/>
+        <TextBlock x:Name="Player1TextBox" TextWrapping="Wrap" Text="Player One == Circle" Canvas.Left="10" Canvas.Top="415" IsEnabled="False" Visibility="Hidden"/>
+        <TextBlock x:Name="Player2TextBox" TextWrapping="Wrap" Text="Player Two == X" Canvas.Left="281" Canvas.Top="415" TextAlignment="Right" IsEnabled="False" Visibility="Hidden"/>
+        <Menu x:Name="Menu" Height="20" Canvas.Left="8" Canvas.Top="5" Width="384" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Menu.Background>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
+            </Menu.Background>
+            <MenuItem Header="Game">
+                <MenuItem Header="New Game" Click="NewGame_Click"/>
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Help"/>
+        </Menu>
+    </Canvas>
+</Window>
